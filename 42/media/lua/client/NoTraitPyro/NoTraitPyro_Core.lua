@@ -61,8 +61,5 @@ end
 
 function NoTraitPyro.setFire(square, flammable)
     if not square then return end
-    local anywhere = false
-    local energy = NoTraitPyro.fireEnergy
-    local fire = IsoFire.new(getCell(), square, anywhere, energy)
-    square:AddTileObject(fire)
+    IsoFireManager.StartFire(getCell(), square, true, NoTraitPyro.fireEnergy)
 end
