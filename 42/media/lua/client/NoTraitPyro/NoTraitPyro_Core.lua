@@ -25,23 +25,22 @@ function NoTraitPyro.isFlammable(item)
     local fullType = item:getFullType()
     local name = string.lower(item:getName() or "")
 
-    -- 1. Hard allow: literature
+    -- 1. Reliable category
     if category == "Literature" then
         return true
     end
 
-    -- 2. Known specific items
-    if fullType == "Base.Money" then
-        return true
-    end
+    -- 2. Explicit known items
+    if fullType == "Base.Money" then return true end
+    if fullType == "Base.IDcard" then return true end
+    if fullType == "Base.IDcard_Female" then return true end
+    if fullType == "Base.CardDeck" then return true end
 
-    -- 3. Heuristic: paper-ish items by name
-    if string.find(name, "id") then return true end
-    if string.find(name, "card") then return true end
+    -- 3. Controlled keyword matching (strict)
     if string.find(name, "paper") then return true end
     if string.find(name, "note") then return true end
-    if string.find(name, "photo") then return true end
     if string.find(name, "map") then return true end
+    if string.find(name, "photo") then return true end
 
     return false
 end
