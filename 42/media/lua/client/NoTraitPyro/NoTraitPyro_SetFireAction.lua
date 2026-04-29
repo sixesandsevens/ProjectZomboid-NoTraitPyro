@@ -18,7 +18,7 @@ function NoTraitPyroSetFireAction:stop()
 end
 
 function NoTraitPyroSetFireAction:perform()
-    NoTraitPyro.setFire(self.square, self.flammable)
+    NoTraitPyro.requestSetFire(self.square)
 
     if self.flammable and self.character:getInventory():contains(self.flammable) then
         self.character:getInventory():Remove(self.flammable)

@@ -21,26 +21,38 @@ end
 function NoTraitPyro.isFlammable(item)
     if not item then return false end
 
-    local category = item:getCategory()
-    local fullType = item:getFullType()
+    local category = item:getCategory() or ""
+    local fullType = item:getFullType() or ""
     local name = string.lower(item:getName() or "")
+    local fullTypeLower = string.lower(fullType)
 
-    -- 1. Reliable category
-    if category == "Literature" then
-        return true
-    end
+    -- Hard deny: these should never be fuel
+    if string.find(fullTypeLower, "key") then return false end
+    if string.find(fullTypeLower, "bag") then return false end
+    if string.find(fullTypeLower, "bottle") then return false end
+    if string.find(fullTypeLower, "water") then return false end
+    if string.find(fullTypeLower, "fluid") then return false end
+    if string.find(fullTypeLower, "container") then return false end
 
-    -- 2. Explicit known items
+    if category == "Key" then return false end
+    if category == "Container" then return false end
+    if category == "Clothing" then return false end
+    if category == "Food" then return false end
+    if category == "Weapon" then return false end
+
+    -- Known safe fuel
+    if category == "Literature" then return true end
+
     if fullType == "Base.Money" then return true end
     if fullType == "Base.IDcard" then return true end
     if fullType == "Base.IDcard_Female" then return true end
     if fullType == "Base.CardDeck" then return true end
 
-    -- 3. Controlled keyword matching (strict)
+    -- Controlled paper-ish names
     if string.find(name, "paper") then return true end
     if string.find(name, "note") then return true end
-    if string.find(name, "map") then return true end
     if string.find(name, "photo") then return true end
+    if string.find(name, "map") then return true end
 
     return false
 end
@@ -61,4 +73,19 @@ end
 function NoTraitPyro.setFire(square, flammable)
     if not square then return end
     IsoFireManager.StartFire(getCell(), square, true, NoTraitPyro.fireEnergy)
+end
+
+function NoTraitPyro.requestSetFire(square)
+    if not square then return end
+
+    if isClient and isClient() then
+        sendClientCommand("NoTraitPyro", "SetFire", {
+            x = square:getX(),
+            y = square:getY(),
+            z = square:getZ(),
+        })
+        return
+    end
+
+    NoTraitPyro.setFire(square)
 end
